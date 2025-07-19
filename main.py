@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# ✅ Enable CORS for frontend access
+# Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,10 +13,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ In-memory submission DB
+# In-memory submission DB
 submissions_db = []
 
-# ✅ Correct answers list
+# Correct answers list
 correct_answers = [
     "Hyper Text Markup Language",        # Q1 - HTML
     "CSS",                               # Q2 - CSS
@@ -35,7 +35,7 @@ correct_answers = [
     "fetch() with method POST"           # Q15 - JavaScript
 ]
 
-# ✅ Question index to topic mapping
+#  Question index to topic mapping
 question_topics = {
     0: "HTML",
     1: "CSS",
@@ -54,18 +54,18 @@ question_topics = {
     14: "JavaScript"
 }
 
-# ✅ Model for user submission
+#  Model for user submission
 class Submission(BaseModel):
     name: str
     score: int
     answers: list[str]  # allow "Skipped"
 
-# ✅ Root endpoint (for testing if app is up)
+#  Root endpoint (for testing if app is up)
 @app.get("/")
 def read_root():
     return {"message": "Backend is live and working!"}
 
-# ✅ POST endpoint for quiz submissions
+#  POST endpoint for quiz submissions
 @app.post("/submissions")
 def submit_score(data: Submission):
     submissions_db.append(data.dict())
@@ -89,7 +89,7 @@ def submit_score(data: Submission):
         "weak_topics": weak_topics
     }
 
-# ✅ GET endpoint for leaderboard
+#  GET endpoint for leaderboard
 @app.get("/submissions")
 def get_submissions():
     user_best_scores = {}
