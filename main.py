@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Enable CORS
+# ✅ Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,10 +13,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# In-memory DB
+# ✅ In-memory submission DB
 submissions_db = []
 
-# ✅ Correct answers matching frontend's QuizContext
+# ✅ Correct answers list
 correct_answers = [
     "Hyper Text Markup Language",        # Q1 - HTML
     "CSS",                               # Q2 - CSS
@@ -54,12 +54,18 @@ question_topics = {
     14: "JavaScript"
 }
 
-# Data model for incoming submission
+# ✅ Model for user submission
 class Submission(BaseModel):
     name: str
     score: int
-    answers: list[str]  # may include "Skipped"
+    answers: list[str]  # allow "Skipped"
 
+# ✅ Root endpoint (for testing if app is up)
+@app.get("/")
+def read_root():
+    return {"message": "Backend is live and working!"}
+
+# ✅ POST endpoint for quiz submissions
 @app.post("/submissions")
 def submit_score(data: Submission):
     submissions_db.append(data.dict())
@@ -74,7 +80,6 @@ def submit_score(data: Submission):
         correct = correct_answers[idx]
         topic = question_topics.get(idx)
 
-        # Normalize and compare
         if not user_answer or user_answer.strip().lower() == "skipped" or user_answer.strip().lower() != correct.strip().lower():
             if topic and topic not in weak_topics:
                 weak_topics.append(topic)
@@ -84,6 +89,7 @@ def submit_score(data: Submission):
         "weak_topics": weak_topics
     }
 
+# ✅ GET endpoint for leaderboard
 @app.get("/submissions")
 def get_submissions():
     user_best_scores = {}
@@ -93,6 +99,5 @@ def get_submissions():
         if name not in user_best_scores or score > user_best_scores[name]["score"]:
             user_best_scores[name] = entry
 
-    # Sort descending by score
     sorted_submissions = sorted(user_best_scores.values(), key=lambda x: x["score"], reverse=True)
     return sorted_submissions
